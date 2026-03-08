@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#080810">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="alert">
+  <title>alert</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#080810;--s1:#0e0e1a;--s2:#141424;--s3:#1a1a2e;
+      --border:rgba(255,255,255,0.07);
+      --gold:#f5c842;--green:#0fca8e;--red:#f04858;--blue:#4d8eff;
+      --text:#dde0f0;--muted:#4a4a80;
+      --mono:'Fira Code',monospace;--ar:'Tajawal',sans-serif;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden}
+    body{background:var(--bg);color:var(--text);font-family:var(--ar);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+
+    /* TOPBAR */
+    .topbar{flex-shrink:0;z-index:100;background:rgba(8,8,16,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:var(--mono);font-size:16px;font-weight:600;color:var(--gold);letter-spacing:4px}
+    .btn-icon{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* SCROLL */
+    .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 13px 110px}
+    .scroll::-webkit-scrollbar{width:2px}
+    .scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:2px}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#0e0e1c,#141428);border:1px solid rgba(245,200,66,.15);border-radius:20px;padding:18px 20px;margin-bottom:12px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(245,200,66,.09) 0%,transparent 70%);pointer-events:none}
+    .hero-top{display:flex;justify-content:space-between;align-items:flex-start}
+    .hero-sym{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:5px}
+    .hero-price{font-family:var(--mono);font-size:36px;font-weight:600;color:var(--gold);direction:ltr;letter-spacing:-1.5px;line-height:1}
+    .hero-price .pfx{font-size:17px;color:rgba(245,200,66,.5);margin-right:2px}
+    .hero-chg{font-family:var(--mono);font-size:14px;font-weight:600}
+    .up{color:var(--green)}.dn{color:var(--red)}
+    .hero-close-box{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .ci-label{font-size:10px;color:var(--muted);margin-bottom:3px;letter-spacing:.5px}
+    .ci-val{font-family:var(--mono);font-size:13px;color:var(--text);direction:ltr}
+    .hero-ts{font-size:10px;color:var(--muted);margin-top:8px;text-align:center;font-family:var(--mono)}
+    .kline-bar{height:2px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+    .kline-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .9s linear}
+
+    /* TICKERS */
+    .tickers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+    .tc{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:10px 8px;text-align:center;cursor:pointer;transition:all .2s}
+    .tc:active{transform:scale(.95)}
+    .tc.hi{border-color:rgba(245,200,66,.35);background:rgba(245,200,66,.04)}
+    .tc-sym{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px}
+    .tc-val{font-family:var(--mono);font-size:13px;color:var(--text);margin-top:3px;direction:ltr}
+
+    /* SECTION */
+    .sec-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .sec-t{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+    .sec-b{font-family:var(--mono);font-size:12px;color:var(--gold);background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.18);padding:2px 10px;border-radius:20px}
+
+    /* ALERT CARD */
+    .ac{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:9px;display:grid;grid-template-columns:1fr auto;gap:10px;position:relative;overflow:hidden}
+    .ac::after{content:'';position:absolute;top:0;right:0;width:3px;height:100%;border-radius:0 18px 18px 0}
+    .ac.t-touch::after{background:var(--blue)}
+    .ac.t-ca::after{background:var(--green)}
+    .ac.t-cb::after{background:var(--red)}
+    .ac.t-cross::after{background:var(--gold)}
+    .ac.near{border-color:rgba(245,200,66,.4);background:rgba(245,200,66,.04)}
+    .ac.fired{animation:flashCard .6s ease}
+    @keyframes flashCard{0%,100%{background:var(--s1)}50%{background:rgba(245,200,66,.15)}}
+
+    .ac-top{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:7px}
+    .badge{border-radius:7px;padding:3px 8px;font-size:11px;font-weight:600}
+    .b-sym{background:rgba(245,200,66,.1);color:var(--gold);font-family:var(--mono)}
+    .b-frame{background:rgba(255,255,255,.04);color:var(--muted);font-family:var(--mono)}
+    .b-touch{background:rgba(77,142,255,.14);color:var(--blue)}
+    .b-ca{background:rgba(15,202,142,.14);color:var(--green)}
+    .b-cb{background:rgba(240,72,88,.14);color:var(--red)}
+    .b-cross{background:rgba(245,200,66,.14);color:var(--gold)}
+
+    .ac-target{font-family:var(--mono);font-size:20px;font-weight:600;direction:ltr;color:var(--text)}
+    .ac-usdt{font-family:var(--mono);font-size:11px;color:var(--muted)}
+    .ac-info{font-size:12px;color:var(--muted);margin-top:3px}
+    .ac-note{font-size:12px;color:rgba(255,255,255,.28);margin-top:3px;font-style:italic}
+    .ac-meta{display:flex;gap:10px;margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+    /* السعر الحالي */
+    .live-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid var(--border)}
+    .lp-label{font-size:11px;color:var(--muted)}
+    .lp-val{font-family:var(--mono);font-size:16px;font-weight:600;direction:ltr;transition:color .3s}
+    .lp-dist{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+    /* شريط المسافة */
+    .dbar{height:3px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;margin-top:5px}
+    .dfill{height:100%;border-radius:3px;transition:width .4s ease,background .4s}
+    .df-near{background:var(--gold)}
+    .df-mid{background:var(--blue)}
+    .df-far{background:var(--muted)}
+
+    /* عداد الشمعة */
+    .candle-row{display:flex;align-items:center;justify-content:space-between;margin-top:7px;padding:6px 10px;background:rgba(255,255,255,.02);border-radius:8px}
+    .candle-label{font-size:10px;color:var(--muted)}
+    .candle-close{font-family:var(--mono);font-size:12px;color:var(--text);direction:ltr}
+    .candle-timer{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--gold)}
+    .candle-timer.urgent{color:var(--red);animation:blink 1s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+    .candle-progress{height:2px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-top:4px}
+    .candle-prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .9s linear}
+
+    .del-btn{background:rgba(240,72,88,.08);border:1px solid rgba(240,72,88,.18);color:var(--red);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;align-self:start;margin-top:2px}
+    .del-btn:active{background:rgba(240,72,88,.28)}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:46px 20px;color:var(--muted)}
+    .empty-ico{font-size:42px;opacity:.25;margin-bottom:10px}
+    .empty-txt{font-size:14px;line-height:1.7}
+
+    /* FAB */
+    .fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),#c9a010);color:#080810;border:none;border-radius:50px;padding:15px 34px;font-family:var(--ar);font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 32px rgba(245,200,66,.32);display:flex;align-items:center;gap:8px;z-index:90;white-space:nowrap;transition:transform .15s,box-shadow .15s}
+    .fab:active{transform:translateX(-50%) scale(.95);box-shadow:0 3px 12px rgba(245,200,66,.15)}
+
+    /* OVERLAY / SHEET */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:200;align-items:flex-end;justify-content:center}
+    .overlay.open{display:flex}
+    .sheet{background:var(--s1);border-radius:26px 26px 0 0;padding:8px 18px 40px;width:100%;max-width:480px;max-height:93dvh;overflow-y:auto;animation:shUp .3s cubic-bezier(.28,1,.2,1);border-top:1px solid var(--border)}
+    .sheet::-webkit-scrollbar{width:2px}
+    @keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .sh-handle{width:38px;height:4px;background:rgba(255,255,255,.1);border-radius:4px;margin:10px auto 20px}
+    .sh-title{font-size:19px;font-weight:700;margin-bottom:20px}
+
+    /* FORM */
+    .ff{margin-bottom:14px}
+    .fl{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:7px;display:block}
+    .fi,.fs{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--ar);font-size:15px;padding:13px 14px;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none}
+    .fi:focus,.fs:focus{border-color:rgba(245,200,66,.45)}
+    input[type=number].fi{font-family:var(--mono);font-size:20px;text-align:center}
+    .sw{position:relative}
+    .sw::after{content:'▾';position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+    .fs{padding-left:32px}
+
+    /* بحث العملة */
+    .sym-search-wrap{position:relative;margin-bottom:8px}
+    .sym-search{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:var(--mono);font-size:15px;padding:12px 14px;outline:none;transition:border-color .2s;text-transform:uppercase}
+    .sym-search::placeholder{font-family:var(--ar);font-size:14px;text-transform:none;color:var(--muted)}
+    .sym-search:focus{border-color:rgba(245,200,66,.45)}
+    .sym-results{display:none;position:absolute;top:calc(100% + 4px);right:0;left:0;background:var(--s2);border:1px solid var(--border);border-radius:12px;max-height:200px;overflow-y:auto;z-index:10}
+    .sym-results.show{display:block}
+    .sym-result-item{padding:12px 14px;font-family:var(--mono);font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+    .sym-result-item:last-child{border-bottom:none}
+    .sym-result-item:active{background:rgba(245,200,66,.08)}
+    .sri-name{color:var(--gold)}
+    .sri-price{font-size:12px;color:var(--muted)}
+    .sym-searching{padding:12px 14px;font-size:13px;color:var(--muted);text-align:center}
+
+    .p2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .pill{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:11px 8px;text-align:center;cursor:pointer;transition:all .18s;font-family:var(--ar);font-size:13px;color:var(--muted)}
+    .pill .pi{font-size:17px;display:block;margin-bottom:3px}
+    .pill.sel{border-color:var(--gold);background:rgba(245,200,66,.08);color:var(--gold)}
+    .pill:active{transform:scale(.96)}
+
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:7px 13px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .18s}
+    .chip.sel{background:rgba(245,200,66,.08);border-color:var(--gold);color:var(--gold)}
+
+    .trow{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+    .trow-ico{font-size:19px}
+    .trow-txt{flex:1}
+    .trow-txt strong{font-size:13px;display:block;margin-bottom:2px}
+    .trow-txt span{font-size:11px;color:var(--muted)}
+    .tog{width:44px;height:26px;background:var(--s3);border:1px solid var(--border);border-radius:13px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+    .tog.on{background:var(--green);border-color:var(--green)}
+    .tog::after{content:'';position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:2px;right:2px;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+    .tog.on::after{right:22px}
+
+    .cbtn{width:100%;background:linear-gradient(135deg,var(--gold),#c9a010);color:#080810;border:none;border-radius:13px;padding:16px;font-family:var(--ar);font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity .2s}
+    .cbtn:active{opacity:.8}
+    .price-hint{text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px;min-height:16px}
+
+    .srow{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+    .srow:last-child{border-bottom:none}
+    .sr-l strong{font-size:13px;display:block;margin-bottom:2px}
+    .sr-l span{font-size:11px;color:var(--muted)}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--s2);border:1px solid var(--border);border-radius:50px;padding:11px 22px;font-size:14px;color:var(--text);z-index:999;opacity:0;transition:all .26s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">alert</div>
+  <button class="btn-icon" onclick="openSettings()">⚙️</button>
+</div>
+
+<div class="scroll">
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="hero-sym">BTC / USDT  •  LIVE</div>
+        <div class="hero-price"><span class="pfx">$</span><span id="heroPrice">---</span></div>
+      </div>
+      <div style="text-align:left">
+        <div class="hero-chg" id="heroChg" style="color:var(--muted)">---</div>
+      </div>
+    </div>
+    <div class="hero-close-box">
+      <div><div class="ci-label">OPEN</div><div class="ci-val" id="hOpen">---</div></div>
+      <div><div class="ci-label">HIGH</div><div class="ci-val up" id="hHigh">---</div></div>
+      <div><div class="ci-label">LOW</div><div class="ci-val dn" id="hLow">---</div></div>
+    </div>
+    <div style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:4px">
+        <span id="klineFrame">15m</span>
+        <span>إغلاق الشمعة: <span id="klineClose">---</span>  <span id="heroTimer" style="color:var(--gold)"></span></span>
+      </div>
+      <div class="kline-bar"><div class="kline-fill" id="klineFill" style="width:0%"></div></div>
+    </div>
+    <div class="hero-ts" id="heroTs">جاري الاتصال…</div>
+  </div>
+
+  <div class="tickers">
+    <div class="tc" id="tc-ETH" onclick="quickAdd('ETHUSDT','ETH')">
+      <div class="tc-sym">ETH</div><div class="tc-val" id="tv-ETH">---</div>
+    </div>
+    <div class="tc" id="tc-BNB" onclick="quickAdd('BNBUSDT','BNB')">
+      <div class="tc-sym">BNB</div><div class="tc-val" id="tv-BNB">---</div>
+    </div>
+    <div class="tc" id="tc-SOL" onclick="quickAdd('SOLUSDT','SOL')">
+      <div class="tc-sym">SOL</div><div class="tc-val" id="tv-SOL">---</div>
+    </div>
+  </div>
+
+  <div class="sec-h">
+    <div class="sec-t">التنبيهات</div>
+    <div class="sec-b" id="cnt">0</div>
+  </div>
+  <div id="list"></div>
+</div>
+
+<button class="fab" onclick="openAdd()"><span style="font-size:20px">＋</span> إضافة تنبيه</button>
+
+<!-- ADD SHEET -->
+<div class="overlay" id="addOverlay" onclick="if(event.target===this)closeAdd()">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-title">🔔 تنبيه جديد</div>
+
+    <!-- بحث العملة -->
+    <div class="ff">
+      <label class="fl">ابحث عن العملة</label>
+      <div class="sym-search-wrap">
+        <input class="sym-search" id="symSearch" placeholder="مثال: BTC أو PEPE أو LINK…" autocomplete="off" oninput="searchSym(this.value)" onfocus="if(this.value.length>=2)showResults()">
+        <div class="sym-results" id="symResults"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px">العملة المختارة: <span id="selectedSymLabel" style="color:var(--gold)">BTCUSDT</span></div>
+      <input type="hidden" id="fSym" value="BTCUSDT">
+    </div>
+
+    <div class="ff">
+      <label class="fl">الإطار الزمني</label>
+      <div class="sw"><select class="fs" id="fFrame">
+        <option value="1m">1 دقيقة</option>
+        <option value="3m">3 دقائق</option>
+        <option value="5m">5 دقائق</option>
+        <option value="15m" selected>15 دقيقة</option>
+        <option value="30m">30 دقيقة</option>
+        <option value="1h">1 ساعة</option>
+        <option value="4h">4 ساعات</option>
+        <option value="1d">يومي</option>
+        <option value="1w">أسبوعي</option>
+      </select></div>
+    </div>
+
+    <div class="ff">
+      <label class="fl">السعر المستهدف</label>
+      <input type="number" class="fi" id="fPrice" step="any" placeholder="0.00">
+      <div class="price-hint" id="priceHint">ابحث عن عملة لعرض السعر</div>
+    </div>
+
+    <div class="ff">
+      <label class="fl">نوع التنبيه</label>
+      <div class="p2">
+        <div class="pill sel" id="p-touch" onclick="pickType('touch')"><span class="pi">👆</span>ملامسة السعر</div>
+        <div class="pill" id="p-ca" onclick="pickType('ca')"><span class="pi">📈</span>إغلاق فوق</div>
+        <div class="pill" id="p-cb" onclick="pickType('cb')"><span class="pi">📉</span>إغلاق تحت</div>
+        <div class="pill" id="p-cross" onclick="pickType('cross')"><span class="pi">⚡</span>اختراق</div>
+      </div>
+    </div>
+
+    <div class="ff">
+      <label class="fl">تصنيف المستوى</label>
+      <div class="chips">
+        <div class="chip sel" onclick="pickChip(this)">نقطة دخول</div>
+        <div class="chip" onclick="pickChip(this)">وقف خسارة</div>
+        <div class="chip" onclick="pickChip(this)">هدف</div>
+        <div class="chip" onclick="pickChip(this)">مقاومة</div>
+        <div class="chip" onclick="pickChip(this)">دعم</div>
+        <div class="chip" onclick="pickChip(this)">قمة</div>
+        <div class="chip" onclick="pickChip(this)">قاع</div>
+      </div>
+    </div>
+
+    <div class="ff">
+      <label class="fl">ملاحظة (اختياري)</label>
+      <input class="fi" id="fNote" placeholder="مثال: فرصة شراء…" style="text-align:right">
+    </div>
+
+    <div class="trow">
+      <div class="trow-ico">🔔</div>
+      <div class="trow-txt"><strong>إشعار + صوت + اهتزاز</strong><span>عند الوصول للسعر</span></div>
+      <div class="tog on" id="notifTog" onclick="toggleNotif(this)"></div>
+    </div>
+    <div class="trow">
+      <div class="trow-ico">✈️</div>
+      <div class="trow-txt"><strong>تليجرام</strong><span>رسالة فورية</span></div>
+      <div class="tog on" id="tgTog" onclick="this.classList.toggle('on')"></div>
+    </div>
+    <button class="cbtn" onclick="addAlert()">✅ إضافة التنبيه</button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-title">⚙️ الإعدادات</div>
+    <div class="ff">
+      <label class="fl">Telegram Bot Token</label>
+      <input class="fi" id="sTgToken" placeholder="TOKEN" style="font-family:var(--mono);font-size:11px;text-align:left;direction:ltr" dir="ltr">
+    </div>
+    <div class="ff">
+      <label class="fl">Chat ID</label>
+      <input class="fi" id="sTgChat" placeholder="123456789" style="font-family:var(--mono);font-size:16px;text-align:center;direction:ltr" dir="ltr">
+    </div>
+    <div class="ff">
+      <label class="fl">إطار BTC الرئيسي</label>
+      <div class="sw"><select class="fs" id="sHeroFrame">
+        <option value="1m">1 دقيقة</option>
+        <option value="5m">5 دقائق</option>
+        <option value="15m" selected>15 دقيقة</option>
+        <option value="1h">1 ساعة</option>
+        <option value="4h">4 ساعات</option>
+        <option value="1d">يومي</option>
+      </select></div>
+    </div>
+    <div style="margin:16px 0 8px">
+      <div class="srow">
+        <div class="sr-l"><strong>الصوت عند التنبيه</strong></div>
+        <div class="tog on" id="soundTog" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="srow">
+        <div class="sr-l"><strong>الاهتزاز</strong></div>
+        <div class="tog on" id="vibTog" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="srow">
+        <div class="sr-l"><strong>نسبة التسامح</strong><span>للملامسة</span></div>
+        <select class="fs" id="tolSel" style="width:auto;padding:6px 28px 6px 10px;font-size:13px">
+          <option value="0.05">0.05%</option>
+          <option value="0.1" selected>0.1%</option>
+          <option value="0.2">0.2%</option>
+          <option value="0.5">0.5%</option>
+        </select>
+      </div>
+      <div class="srow">
+        <div class="sr-l"><strong>إشعارات الجهاز</strong><span id="notifSt">---</span></div>
+        <button class="cbtn" style="width:auto;padding:8px 14px;font-size:13px;margin-top:0" onclick="reqNotif()">تفعيل</button>
+      </div>
+      <div class="srow">
+        <div class="sr-l"><strong>اختبار تليجرام</strong><span>تأكد أن الإعدادات صحيحة</span></div>
+        <button class="cbtn" style="width:auto;padding:8px 14px;font-size:13px;margin-top:0;background:linear-gradient(135deg,#229ED9,#1a7db5)" onclick="testTelegram()">اختبار</button>
+      </div>
+      <div class="srow">
+        <div class="sr-l"><strong>اختبار الصوت</strong></div>
+        <button class="cbtn" style="width:auto;padding:8px 14px;font-size:13px;margin-top:0" onclick="testSound()">🔊 تشغيل</button>
+      </div>
+    </div>
+    <button class="cbtn" onclick="saveSettings()">💾 حفظ</button>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px;font-family:var(--mono)">alert v4.1</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+const SK='alert_v5',CK='alert_cfg_v3';
+let alerts=JSON.parse(localStorage.getItem(SK)||'[]');
+let cfg=Object.assign(
+  {tgToken:'',tgChat:'',sound:true,vib:true,tol:0.1,heroFrame:'15m',notif:false},
+  JSON.parse(localStorage.getItem(CK)||'{}')
+);
+let prices={},klines={},prevBTC=null,selType='touch';
+let ws=null,wsTimer=null,searchTimer=null;
+let allSymbols=[];
+
+const TYPE_INFO={
+  touch:{label:'ملامسة',icon:'👆',bcls:'b-touch',ccls:'t-touch'},
+  ca:   {label:'إغلاق ↑',icon:'📈',bcls:'b-ca',ccls:'t-ca'},
+  cb:   {label:'إغلاق ↓',icon:'📉',bcls:'b-cb',ccls:'t-cb'},
+  cross:{label:'اختراق',icon:'⚡',bcls:'b-cross',ccls:'t-cross'},
+};
+
+// ═══════════════════════════════════════
+//  FORMAT
+// ═══════════════════════════════════════
+function fmt(n){
+  if(n===null||n===undefined||isNaN(n)) return '---';
+  // نفس طريقة Binance وTradingView — يحذف الأصفار الزائدة
+  if(n>=10000) return n.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(n>=1000)  return parseFloat(n.toFixed(2)).toString();
+  if(n>=100)   return parseFloat(n.toFixed(3)).toString();
+  if(n>=10)    return parseFloat(n.toFixed(4)).toString();
+  if(n>=1)     return parseFloat(n.toFixed(4)).toString();
+  if(n>=0.1)   return parseFloat(n.toFixed(4)).toString();
+  if(n>=0.01)  return parseFloat(n.toFixed(5)).toString();
+  if(n>=0.001) return parseFloat(n.toFixed(6)).toString();
+  return parseFloat(n.toFixed(8)).toString();
+}
+
+function fmtTime(ms){
+  if(ms<=0) return '00:00';
+  const s=Math.floor(ms/1000);
+  const m=Math.floor(s/60),sc=s%60;
+  if(m>=60){const h=Math.floor(m/60),rm=m%60;return h+'h '+rm+'m';}
+  return String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');
+}
+
+// ═══════════════════════════════════════
+//  WEBSOCKET
+// ═══════════════════════════════════════
+function buildURL(){
+  const alertSyms=[...new Set(alerts.map(a=>a.sym.toLowerCase()))];
+  const all=[...new Set(['btcusdt','ethusdt','bnbusdt','solusdt',...alertSyms])];
+  const streams=[];
+  all.forEach(s=>{
+    streams.push(s+'@aggTrade');
+    streams.push(s+'@kline_'+cfg.heroFrame);
+  });
+  alerts.forEach(a=>{
+    const k=a.sym.toLowerCase()+'@kline_'+a.frame;
+    if(!streams.includes(k)) streams.push(k);
+  });
+  return 'wss://stream.binance.com:9443/stream?streams='+streams.join('/');
+}
+
+function connectWS(){
+  if(ws){try{ws.close()}catch{}}
+  ws=new WebSocket(buildURL());
+  ws.onopen=()=>{if(wsTimer){clearTimeout(wsTimer);wsTimer=null;}};
+  ws.onmessage=e=>{
+    try{const d=JSON.parse(e.data);handleStream(d.data||d);}catch{}
+  };
+  ws.onerror=()=>{};
+  ws.onclose=()=>{wsTimer=setTimeout(connectWS,3000);};
+}
+
+function handleStream(d){
+  if(!d||!d.e) return;
+  if(d.e==='aggTrade'){
+    const sym=d.s,p=parseFloat(d.p);
+    prices[sym]=p;
+    updateLiveInCards(sym,p);
+    if(sym==='BTCUSDT') updateHero(p);
+    updateTickerEl(sym,p);
+    checkTouch(sym,p);
+    localStorage.setItem('alert_px',JSON.stringify(prices));
+  }
+  if(d.e==='kline'){
+    const k=d.k,sym=d.s,key=sym+'_'+k.i;
+    klines[key]={open:parseFloat(k.o),high:parseFloat(k.h),low:parseFloat(k.l),close:parseFloat(k.c),openTime:k.t,closeTime:k.T,isClosed:k.x};
+    if(sym==='BTCUSDT'&&k.i===cfg.heroFrame) updateKlineHero(key);
+    if(k.x) checkClose(sym,k.i,parseFloat(k.c));
+    updateKlineInCards(sym,k.i,parseFloat(k.c),k.x,k.T);
+  }
+}
+
+// ═══════════════════════════════════════
+//  تحديث البطاقات مباشرة
+// ═══════════════════════════════════════
+function updateLiveInCards(sym,price){
+  document.querySelectorAll('.ac[data-sym="'+sym+'"]').forEach(card=>{
+    const target=parseFloat(card.dataset.price);
+    const pct=Math.abs(price-target)/target*100;
+    const lpEl=card.querySelector('.lp-val');
+    if(lpEl){lpEl.textContent='$'+fmt(price);lpEl.className='lp-val '+(price>=target?'up':'dn');}
+    const distEl=card.querySelector('.lp-dist');
+    if(distEl) distEl.textContent=pct.toFixed(3)+'%';
+    const fill=card.querySelector('.dfill');
+    if(fill){
+      const w=pct<cfg.tol?100:pct<2?60:pct<5?30:10;
+      fill.style.width=w+'%';
+      fill.className='dfill '+(pct<cfg.tol?'df-near':pct<2?'df-mid':'df-far');
+    }
+    if(pct<cfg.tol) card.classList.add('near');
+    else card.classList.remove('near');
+  });
+}
+
+function updateKlineInCards(sym,frame,closePrice,isClosed,closeTime){
+  document.querySelectorAll('.ac[data-sym="'+sym+'"][data-frame="'+frame+'"]').forEach(card=>{
+    const closeEl=card.querySelector('.kline-close-val');
+    if(closeEl){closeEl.textContent='$'+fmt(closePrice);closeEl.style.color=isClosed?'var(--green)':'var(--text)';}
+    // تحديث العداد
+    const timerEl=card.querySelector('.candle-timer');
+    const progEl=card.querySelector('.candle-prog-fill');
+    if(timerEl&&closeTime){
+      const rem=closeTime-Date.now();
+      timerEl.textContent=fmtTime(rem);
+      timerEl.className='candle-timer'+(rem<60000?' urgent':'');
+    }
+    if(progEl&&klines[sym+'_'+frame]){
+      const kl=klines[sym+'_'+frame];
+      const pct=Math.min(100,((Date.now()-kl.openTime)/(kl.closeTime-kl.openTime))*100);
+      progEl.style.width=pct+'%';
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+//  HERO
+// ═══════════════════════════════════════
+function updateHero(p){
+  document.getElementById('heroPrice').textContent=p.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('heroTs').textContent='آخر تداول: '+new Date().toLocaleTimeString('ar-SA',{hour12:false});
+  if(prevBTC){
+    const d=p-prevBTC,pc=(d/prevBTC*100).toFixed(3);
+    const el=document.getElementById('heroChg');
+    el.className='hero-chg '+(d>=0?'up':'dn');
+    el.textContent=(d>=0?'▲ ':'▼ ')+Math.abs(pc)+'%';
+  }
+  prevBTC=p;
+}
+
+function updateKlineHero(key){
+  const k=klines[key];if(!k) return;
+  document.getElementById('hOpen').textContent=fmt(k.open);
+  document.getElementById('hHigh').textContent=fmt(k.high);
+  document.getElementById('hLow').textContent=fmt(k.low);
+  document.getElementById('klineClose').textContent=fmt(k.close);
+  document.getElementById('klineFrame').textContent=cfg.heroFrame;
+  const pct=Math.min(100,((Date.now()-k.openTime)/(k.closeTime-k.openTime))*100);
+  document.getElementById('klineFill').style.width=pct+'%';
+  const rem=k.closeTime-Date.now();
+  document.getElementById('heroTimer').textContent=rem>0?fmtTime(rem):'';
+}
+
+function updateTickerEl(sym,price){
+  const m={ETHUSDT:'ETH',BNBUSDT:'BNB',SOLUSDT:'SOL'};
+  const s=m[sym];if(!s) return;
+  document.getElementById('tv-'+s).textContent=fmt(price);
+}
+
+// ═══════════════════════════════════════
+//  CHECK ALERTS
+// ═══════════════════════════════════════
+function checkTouch(sym,cur){
+  const tol=cfg.tol/100,now=Date.now();
+  let changed=false;
+  alerts.forEach(a=>{
+    if(a.sym!==sym||a.type!=='touch') return;
+    if(Math.abs(cur-a.price)/a.price>tol) return;
+    if(now-a.lastTs<300000) return;
+    a.count++;a.lastTs=now;changed=true;
+    fire(a,cur);
+  });
+  if(changed) saveAlerts();
+}
+
+function checkClose(sym,frame,closePrice){
+  const now=Date.now();let changed=false;
+  alerts.forEach(a=>{
+    if(a.sym!==sym||a.frame!==frame) return;
+    if(a.type!=='ca'&&a.type!=='cb'&&a.type!=='cross') return;
+    let hit=false;
+    if(a.type==='ca') hit=closePrice>a.price;
+    if(a.type==='cb') hit=closePrice<a.price;
+    if(a.type==='cross') hit=Math.abs(closePrice-a.price)/a.price<=cfg.tol/100;
+    if(!hit||now-a.lastTs<300000) return;
+    a.count++;a.lastTs=now;changed=true;
+    fire(a,closePrice);
+  });
+  if(changed) saveAlerts();
+}
+
+// ═══════════════════════════════════════
+//  FIRE — صوت + اهتزاز + إشعار + تليجرام
+// ═══════════════════════════════════════
+function fire(a,cur){
+  // صوت تنبيه قوي
+  playAlert();
+  // اهتزاز
+  if(cfg.vib&&navigator.vibrate) navigator.vibrate([200,100,200,100,400,100,400]);
+  // وميض البطاقة
+  const card=document.querySelector('.ac[data-sym="'+a.sym+'"][data-price="'+a.price+'"]');
+  if(card){card.classList.add('fired');setTimeout(()=>card.classList.remove('fired'),600);}
+  // إشعار
+  // إشعار الجهاز — إذا مدعوم
+  if('Notification' in window && Notification.permission==='granted'){
+    try{
+      new Notification('🔔 '+a.sym.replace('USDT','')+' وصل $'+fmt(cur),{
+        body:TYPE_INFO[a.type].label+' | '+a.level+' | '+a.frame,
+        requireInteraction:true
+      });
+    }catch{}
+  }
+  // toast بارز يبقى أطول مدة كبديل
+  showBigToast('🔔 '+a.sym.replace('USDT','')+' @ $'+fmt(cur)+' | '+TYPE_INFO[a.type].label);
+  // toast moved to showBigToast above
+  // تليجرام
+  if(a.tg&&cfg.tgToken&&cfg.tgChat){
+    const msg='🚨 *Alert*\n\n💰 '+a.sym+'\n📊 السعر: `'+fmt(cur)+'`\n🎯 الهدف: `'+a.price+'`\n'+TYPE_INFO[a.type].icon+' '+TYPE_INFO[a.type].label+'\n📌 '+a.level+' | ⏱ '+a.frame+(a.note?'\n📝 '+a.note:'');
+    fetch('https://api.telegram.org/bot'+cfg.tgToken+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:cfg.tgChat,text:msg,parse_mode:'Markdown'})}).catch(()=>{});
+  }
+}
+
+// ═══════════════════════════════════════
+//  SOUND — صوت تنبيه واضح وقوي
+// ═══════════════════════════════════════
+let actx;
+function playAlert(){
+  if(!cfg.sound) return;
+  try{
+    if(!actx) actx=new(window.AudioContext||window.webkitAudioContext)();
+    // نغمة تنبيه صاعدة ثم هابطة
+    const notes=[
+      [440,0,.15,.6],[550,.18,.15,.6],[660,.36,.15,.6],
+      [880,.54,.25,.8],[660,.82,.15,.4],[440,1.0,.3,.3]
+    ];
+    notes.forEach(([freq,delay,dur,vol])=>{
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.connect(g);g.connect(actx.destination);
+      o.type='triangle';o.frequency.value=freq;
+      const t=actx.currentTime+delay;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(vol,t+.03);
+      g.gain.linearRampToValueAtTime(0,t+dur);
+      o.start(t);o.stop(t+dur+.05);
+    });
+  }catch{}
+}
+
+// صوت اختبار
+function testSound(){playAlert();showToast('🔊 تم تشغيل صوت التنبيه');}
+
+async function testTelegram(){
+  // احفظ الإعدادات أولاً
+  const token=document.getElementById('sTgToken').value.trim();
+  const chat=document.getElementById('sTgChat').value.trim();
+  if(!token||!chat){showToast('❌ أدخل Token و Chat ID أولاً');return;}
+  showToast('📤 جاري الإرسال…');
+  try{
+    const r=await fetch('https://api.telegram.org/bot'+token+'/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:chat,text:'✅ alert — الاتصال يعمل بنجاح!\n\nالتطبيق متصل وجاهز لإرسال التنبيهات 🚀',parse_mode:'Markdown'})
+    });
+    const d=await r.json();
+    if(d.ok){
+      showToast('✅ تم الإرسال! تحقق من تليجرام');
+      cfg.tgToken=token;cfg.tgChat=chat;
+      localStorage.setItem(CK,JSON.stringify(cfg));
+    } else {
+      showToast('❌ خطأ: '+( d.description||'تحقق من Token'));
+      console.error('TG error:',d);
+    }
+  }catch(e){showToast('❌ فشل الاتصال بتليجرام');console.error(e);}
+}
+
+// ═══════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════
+function renderList(){
+  const el=document.getElementById('list');
+  document.getElementById('cnt').textContent=alerts.length;
+  if(!alerts.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">🔔</div><div class="empty-txt">لا توجد تنبيهات<br>اضغط + للإضافة</div></div>';
+    return;
+  }
+  el.innerHTML=alerts.map(a=>{
+    const t=TYPE_INFO[a.type]||TYPE_INFO.touch;
+    const cur=prices[a.sym];
+    const kkey=a.sym+'_'+a.frame;
+    const kl=klines[kkey];
+    const pct=cur?Math.abs(cur-a.price)/a.price*100:null;
+    const isNear=pct!==null&&pct<cfg.tol;
+    const fill=pct===null?0:pct<cfg.tol?100:pct<2?60:pct<5?30:10;
+    const dc=pct===null?'df-far':pct<cfg.tol?'df-near':pct<2?'df-mid':'df-far';
+    const rem=kl?kl.closeTime-Date.now():0;
+    const prog=kl?Math.min(100,((Date.now()-kl.openTime)/(kl.closeTime-kl.openTime))*100):0;
+
+    return `<div class="ac ${t.ccls}${isNear?' near':''}" data-sym="${a.sym}" data-price="${a.price}" data-frame="${a.frame}">
+      <div>
+        <div class="ac-top">
+          <span class="badge b-sym">${a.sym.replace('USDT','')}</span>
+          <span class="badge b-frame">${a.frame}</span>
+          <span class="badge ${t.bcls}">${t.icon} ${t.label}</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:5px">
+          <div class="ac-target">$${fmt(a.price)}</div>
+          <div class="ac-usdt">هدف</div>
+        </div>
+        <div class="ac-info">📌 ${a.level}</div>
+        ${a.note?`<div class="ac-note">📝 ${a.note}</div>`:''}
+
+        <!-- السعر الحالي -->
+        <div class="live-row">
+          <span class="lp-label">السعر الآن</span>
+          <span class="lp-val ${cur?(cur>=a.price?'up':'dn'):''}">${cur?'$'+fmt(cur):'---'}</span>
+          <span class="lp-dist">${pct!==null?pct.toFixed(3)+'%':'---'}</span>
+        </div>
+        <div class="dbar"><div class="dfill ${dc}" style="width:${fill}%"></div></div>
+
+        <!-- إغلاق الشمعة + عداد تنازلي -->
+        ${kl?`<div class="candle-row">
+          <span class="candle-label">إغلاق ${a.frame}</span>
+          <span class="kline-close-val candle-close" style="color:${kl.isClosed?'var(--green)':'var(--text)'}">$${fmt(kl.close)}</span>
+          <span class="candle-timer${rem<60000?' urgent':''}">${fmtTime(rem)}</span>
+        </div>
+        <div class="candle-progress"><div class="candle-prog-fill" style="width:${prog}%"></div></div>`:''}
+
+        <div class="ac-meta">
+          <span>🔄 ${a.count}</span>
+          ${a.notif?'<span>🔔</span>':''}
+          ${a.tg?'<span>✈️</span>':''}
+          <span>${new Date(a.created).toLocaleDateString('ar-SA')}</span>
+        </div>
+      </div>
+      <button class="del-btn" onclick="deleteAlert('${a.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+//  بحث العملة — Binance API
+// ═══════════════════════════════════════
+async function loadAllSymbols(){
+  try{
+    const r=await fetch('https://api.binance.com/api/v3/exchangeInfo');
+    const d=await r.json();
+    allSymbols=d.symbols.filter(s=>s.quoteAsset==='USDT'&&s.status==='TRADING').map(s=>s.baseAsset);
+  }catch{}
+}
+
+let searchDebounce=null;
+function searchSym(val){
+  clearTimeout(searchDebounce);
+  const q=val.trim().toUpperCase();
+  const resultsEl=document.getElementById('symResults');
+  if(q.length<1){resultsEl.classList.remove('show');return;}
+  resultsEl.innerHTML='<div class="sym-searching">جاري البحث…</div>';
+  resultsEl.classList.add('show');
+  searchDebounce=setTimeout(async()=>{
+    const matches=allSymbols.filter(s=>s.startsWith(q)||s.includes(q)).slice(0,8);
+    if(!matches.length){resultsEl.innerHTML='<div class="sym-searching">لا نتائج</div>';return;}
+    // جلب أسعار الـ matches دفعة واحدة
+    const items=await Promise.all(matches.map(async base=>{
+      const sym=base+'USDT';
+      let p=prices[sym];
+      if(!p){
+        try{
+          const r=await fetch('https://api.binance.com/api/v3/ticker/price?symbol='+sym);
+          const d=await r.json();
+          p=parseFloat(d.price);
+          prices[sym]=p;
+        }catch{p=null;}
+      }
+      return {base,sym,price:p};
+    }));
+    resultsEl.innerHTML=items.map(i=>`
+      <div class="sym-result-item" onclick="selectSym('${i.sym}','${i.base}',${i.price||0})">
+        <span class="sri-name">${i.base}</span>
+        <span class="sri-price">${i.price?'$'+fmt(i.price):'---'}</span>
+      </div>`).join('');
+  },300);
+}
+
+function selectSym(sym,base,price){
+  document.getElementById('fSym').value=sym;
+  document.getElementById('selectedSymLabel').textContent=sym;
+  document.getElementById('symSearch').value=base;
+  document.getElementById('symResults').classList.remove('show');
+  if(price>0) document.getElementById('priceHint').textContent='السعر المباشر: $'+fmt(price);
+}
+
+function showResults(){
+  if(document.getElementById('symSearch').value.length>=1)
+    document.getElementById('symResults').classList.add('show');
+}
+
+// إغلاق نتائج البحث عند الضغط خارجها
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.sym-search-wrap'))
+    document.getElementById('symResults').classList.remove('show');
+});
+
+// ═══════════════════════════════════════
+//  CRUD
+// ═══════════════════════════════════════
+function saveAlerts(){
+  localStorage.setItem(SK,JSON.stringify(alerts));
+  document.getElementById('cnt').textContent=alerts.length;
+}
+
+function addAlert(){
+  const sym=document.getElementById('fSym').value;
+  if(!sym||sym==='BTCUSDT'&&!document.getElementById('symSearch').value){
+    // تحقق أن المستخدم اختار عملة
+  }
+  const price=parseFloat(document.getElementById('fPrice').value);
+  if(!price||price<=0){showToast('❌ أدخل سعراً صحيحاً');return;}
+  const chipEl=document.querySelector('#addOverlay .chip.sel');
+  const a={
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    sym,price,
+    frame:document.getElementById('fFrame').value,
+    type:selType,
+    level:chipEl?chipEl.textContent:'نقطة دخول',
+    note:document.getElementById('fNote').value.trim(),
+    notif:document.getElementById('notifTog').classList.contains('on'),
+    tg:document.getElementById('tgTog').classList.contains('on'),
+    created:Date.now(),count:0,lastTs:0
+  };
+  alerts.unshift(a);
+  saveAlerts();closeAdd();renderList();connectWS();
+  showToast('✅ تم إضافة التنبيه');
+  document.getElementById('fNote').value='';
+  document.getElementById('fPrice').value='';
+  document.getElementById('symSearch').value='';
+  document.getElementById('fSym').value='BTCUSDT';
+  document.getElementById('selectedSymLabel').textContent='BTCUSDT';
+  document.getElementById('priceHint').textContent='ابحث عن عملة لعرض السعر';
+}
+
+function deleteAlert(id){
+  alerts=alerts.filter(a=>a.id!==id);
+  saveAlerts();renderList();showToast('🗑️ تم الحذف');
+}
+
+// ═══════════════════════════════════════
+//  UI
+// ═══════════════════════════════════════
+function pickType(t){
+  selType=t;
+  ['touch','ca','cb','cross'].forEach(x=>document.getElementById('p-'+x).classList.remove('sel'));
+  document.getElementById('p-'+t).classList.add('sel');
+}
+function pickChip(el){
+  document.querySelectorAll('#addOverlay .chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function quickAdd(sym,s){
+  document.querySelectorAll('.tc').forEach(c=>c.classList.remove('hi'));
+  document.getElementById('tc-'+s).classList.add('hi');
+  openAdd();
+  selectSym(sym,s.replace('USDT',''),prices[sym]||0);
+  document.getElementById('symSearch').value=s;
+}
+function openAdd(){document.getElementById('addOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeAdd(){document.getElementById('addOverlay').classList.remove('open');document.body.style.overflow='';}
+function openSettings(){
+  document.getElementById('sTgToken').value=cfg.tgToken||'';
+  document.getElementById('sTgChat').value=cfg.tgChat||'';
+  document.getElementById('tolSel').value=String(cfg.tol);
+  document.getElementById('sHeroFrame').value=cfg.heroFrame||'15m';
+  document.getElementById('soundTog').className='tog'+(cfg.sound?' on':'');
+  document.getElementById('vibTog').className='tog'+(cfg.vib?' on':'');
+  updateNotifStatus();
+  document.getElementById('settingsOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open');document.body.style.overflow='';}
+function saveSettings(){
+  cfg.tgToken=document.getElementById('sTgToken').value.trim();
+  cfg.tgChat=document.getElementById('sTgChat').value.trim();
+  cfg.tol=parseFloat(document.getElementById('tolSel').value);
+  cfg.heroFrame=document.getElementById('sHeroFrame').value;
+  cfg.sound=document.getElementById('soundTog').classList.contains('on');
+  cfg.vib=document.getElementById('vibTog').classList.contains('on');
+  localStorage.setItem(CK,JSON.stringify(cfg));
+  closeSettings();connectWS();
+  showToast('✅ تم حفظ الإعدادات');
+}
+async function reqNotif(){
+  if(!('Notification' in window)){showToast('⚠️ غير مدعوم');return;}
+  const p=await Notification.requestPermission();
+  cfg.notif=p==='granted';
+  localStorage.setItem(CK,JSON.stringify(cfg));
+  updateNotifStatus();
+  showToast(p==='granted'?'✅ الإشعارات مفعّلة':'❌ تم الرفض');
+}
+async function toggleNotif(tog){
+  if(!tog.classList.contains('on')&&Notification.permission!=='granted'){
+    await reqNotif();
+    if(Notification.permission==='granted') tog.classList.add('on');
+  } else tog.classList.toggle('on');
+}
+function updateNotifStatus(){
+  const el=document.getElementById('notifSt');
+  if(!el) return;
+  if(!('Notification' in window)){
+    el.textContent='📳 صوت + اهتزاز مفعّل';
+    el.style.color='var(--green)';
+    return;
+  }
+  const m={'granted':'✅ مفعّل','denied':'❌ محظور','default':'⚠️ اضغط تفعيل'};
+  el.textContent=m[Notification.permission]||'';
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function showBigToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background='rgba(245,200,66,.15)';
+  t.style.borderColor='rgba(245,200,66,.5)';
+  t.style.color='var(--gold)';
+  t.style.fontSize='15px';
+  t.style.padding='14px 28px';
+  t.classList.add('show');
+  setTimeout(()=>{
+    t.classList.remove('show');
+    t.style.cssText='';
+  },8000);
+}
+
+// ═══════════════════════════════════════
+//  عداد تنازلي — كل ثانية بدون إعادة رسم
+// ═══════════════════════════════════════
+setInterval(()=>{
+  // تحديث العداد في كل بطاقة مباشرة (DOM فقط)
+  document.querySelectorAll('.ac').forEach(card=>{
+    const sym   = card.dataset.sym;
+    const frame = card.dataset.frame;
+    if(!sym||!frame) return;
+    const kl = klines[sym+'_'+frame];
+    if(!kl) return;
+    const rem  = kl.closeTime - Date.now();
+    const prog = Math.min(100,((Date.now()-kl.openTime)/(kl.closeTime-kl.openTime))*100);
+    const timerEl = card.querySelector('.candle-timer');
+    if(timerEl){
+      timerEl.textContent = fmtTime(rem);
+      timerEl.className   = 'candle-timer'+(rem<60000?' urgent':'');
+    }
+    const progEl = card.querySelector('.candle-prog-fill');
+    if(progEl) progEl.style.width = prog+'%';
+  });
+  // تحديث hero فقط
+  const hkey='BTCUSDT_'+cfg.heroFrame;
+  if(klines[hkey]) updateKlineHero(hkey);
+},1000);
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+(function init(){
+  const cached=JSON.parse(localStorage.getItem('alert_px')||'{}');
+  Object.assign(prices,cached);
+  renderList();
+  updateNotifStatus();
+  if('Notification' in window){
+    if(Notification.permission==='granted'){cfg.notif=true;localStorage.setItem(CK,JSON.stringify(cfg));}
+    else if(Notification.permission==='default'){
+      setTimeout(()=>Notification.requestPermission().then(p=>{
+        cfg.notif=p==='granted';localStorage.setItem(CK,JSON.stringify(cfg));updateNotifStatus();
+      }),2000);
+    }
+  }
+  connectWS();
+  loadAllSymbols(); // تحميل قائمة كل عملات Binance للبحث
+})();
+</script>
+</body>
+</html>
